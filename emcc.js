@@ -16163,8 +16163,7 @@ if (typeof MozWebSocket == 'function'){
 }
 
 //example
-var contract = 'ecard'
-   
+
 var urlAppGet = 'http://118.178.127.35:4001/';    
 var urlAppSet = 'http://118.178.127.35:4002/';    
 var urlAppBroad = 'ws://118.178.127.35:4003/';  
@@ -16205,20 +16204,12 @@ function getPri() {
   return pri
 }
 
-function getContract() {
-  return contract
-}
-
 function setPub(pVar) {
   pub = pVar
 }
 
 function setPri(pVar) {
   pri = pVar
-}
-
-function setContract(pVar) {
-  contract = pVar
 }
 
 function getTaget(type, pubkey, name, code, arg, sign) {
@@ -16239,14 +16230,14 @@ function docmd(type, pubkey, prikey, name, func, arg) {
   return block
 }
 
-function doMethodGet(func,arg) {
-    var block = docmd('method',pub,pri,contract,func,arg) 
+function doEmccGet(type, pub, pri, name, func, arg) {
+    var block = name + "$" + func + "$" + arg + "$" + pub;
     xmlhttp.open("GET","/get/"+block);
     xmlhttp.send();
     //return urlAppGet+block
 }
-function doMethodSet(func,arg) {
-    var block = docmd('method',pub,pri,contract,func,arg) 
+function doEmccSet(type, pub, pri, name, func, arg) {
+    var block = docmd(type,pub,pri,name,func,arg) 
     xmlhttp.open("GET","/set/"+block);
     xmlhttp.send();
     //return urlAppSet+block
