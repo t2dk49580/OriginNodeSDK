@@ -1,0 +1,124 @@
+  <!DOCTYPE html>
+  <html>
+      <head>
+          <title>WebSocket Echo Client</title>
+          <meta charset="utf-8">
+      </head>
+      <body>
+          <h1>WebSocket Echo Client</h1>
+          <p>
+              <button onClick="initWebSocket();">Connect</button>
+              <button onClick="stopWebSocket();">Disconnect</button>
+              <button onClick="checkSocket();">State</button>
+          </p>
+          <p>
+              <textarea id="argument" style="width:600px;height:200px;"></textarea>
+          </p>
+          <p>
+              <input type="text" id="name" value="contract name" />
+              <input type="text" id="type" value="method" />
+              <input type="text" id="func"  value="function" />
+              <button onClick="doGet();">Get</button>
+              <button onClick="doSet();">Set</button>
+              <button onClick="doRequest();">Request</button>
+          </p>
+          <input>
+          <p>
+              <textarea id="debugTextArea1" style="width:600px;height:200px;"></textarea>
+          </p>
+          <script type="text/javascript" src="emcc.js" ></script>
+          <script type="text/javascript">
+              var debugTextArea = document.getElementById("argument");
+              var debugTextArea1 = document.getElementById("debugTextArea1");
+              var pubkey = getPub()
+              var prikey = getPri()
+
+              xmlhttp.onreadystatechange=function(){
+                debug(xmlhttp.responseText);
+              }
+
+              function debug(message) {
+                  debugTextArea1.value += message + "\n";
+                  debugTextArea1.scrollTop = debugTextArea1.scrollHeight;
+              }
+
+              function doGet() {
+                  var name = document.getElementById("name").value;
+                  var code = document.getElementById("func").value;
+                  var arg  = document.getElementById("argument").value;
+                  var type = document.getElementById("type").value;
+                  doEmccGet(type,pubkey,prikey,name,code,arg)
+              }
+
+              function doSet() {
+                  var name = document.getElementById("name").value;
+                  var code = document.getElementById("func").value;
+                  var arg  = document.getElementById("argument").value;
+                  var type = document.getElementById("type").value;
+                  doEmccSet(type,pubkey,prikey,name,code,arg)
+              }
+
+              function doRequest() {
+                xmlhttp.open("GET","/get/"+document.getElementById("argument").value);
+                xmlhttp.send();
+              }
+
+              function initWebSocket() {
+                  try {
+                      appBroad.onopen = function (evt) {
+                          debug("CONNECTED");
+                      };
+                      appBroad.onclose = function (evt) {
+                          debug("DISCONNECTED");
+                      };
+                      appBroad.onmessage = function (evt) {
+                          console.log( "Message received :", evt.data );
+                          debug( evt.data );
+                      };
+                      appBroad.onerror = function (evt) {
+                          debug('ERROR: ' + evt.data);
+                      };
+                  } catch (exception) {
+                      debug('ERROR: ' + exception);
+                  }
+              }
+
+              function stopWebSocket() {
+                  if (appBroad)
+                  appBroad.close();
+              }
+
+              function checkSocket() {
+                  if (appBroad != null) {
+                      var stateStr;
+                      switch (appBroad.readyState) {
+                          case 0: {
+                              stateStr = "CONNECTING";
+                              break;
+                          }
+                          case 1: {
+                              stateStr = "OPEN";
+                              break;
+                          }
+                          case 2: {
+                              stateStr = "CLOSING";
+                              break;
+                          }
+                          case 3: {
+                              stateStr = "CLOSED";
+                              break;
+                          }
+                          default: {
+                              stateStr = "UNKNOW";
+                              break;
+                          }
+                      }
+                      debug("WebSocket state = " + appBroad.readyState + " ( " + stateStr + " )");
+                  } else {
+                      debug("WebSocket is null");
+                  }
+              }
+
+          </script>
+      </body>
+  </html>
