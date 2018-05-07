@@ -16158,33 +16158,44 @@ run();
 //doRequest(url+contract1+'$getUser$'+userpub+'$'+userpub)
 */
 
+if (typeof MozWebSocket == 'function'){
+  WebSocket = MozWebSocket;
+}
 
 //example
 var contract = 'ecard'
-
-var urlDeply = 'ws://118.178.127.35:3000/';     
-var urlAppGet = 'http://118.178.127.35:3001/';    
-var urlAppSet = 'http://118.178.127.35:3002/';    
-var urlAppBroad = 'ws://118.178.127.35:3003/';  
-var urlBroadReal = 'ws://118.178.127.35:3004/'; 
-var urlBroadSync = 'ws://118.178.127.35:3005/'; 
+   
+var urlAppGet = 'http://118.178.127.35:4001/';    
+var urlAppSet = 'http://118.178.127.35:4002/';    
+var urlAppBroad = 'ws://118.178.127.35:4003/';  
+var urlBroadReal = 'ws://118.178.127.35:4004/'; 
+var urlBroadSync = 'ws://118.178.127.35:4005/'; 
 
 //example
 Module.ccall('getkey','number',null,null);
 var pub = Module.ccall('getPublicKey','string',null,null);
 var pri = Module.ccall('getPrivateKey','string',null,null);
-var wsData = '';
 console.log('public key=',pub)
 console.log('private key=',pri)
 
 appBroad = new WebSocket( urlAppBroad );
-appBroad.onopen = function (evt) {
-    console.log("ws appBroad CONNECTED");
-};
-appBroad.onmessage = function (evt) {
-    console.log( "ws appBroad Message received :", evt.data );
+//appBroad.onopen = function (evt) {
+//    console.log("ws appBroad CONNECTED");
+//};
+//appBroad.onmessage = function (evt) {
+//    console.log( "ws appBroad Message received :", evt.data );
     //var w=evt.data.replace(/[\\]/g,'')
-};
+//};
+
+if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+}else{// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+}
+
+//xmlhttp.onreadystatechange=function(){
+//    console.log( "http received :", xmlhttp.responseText );
+//}
 
 function getPub() {
   return pub
@@ -16228,10 +16239,15 @@ function docmd(type, pubkey, prikey, name, func, arg) {
   return block
 }
 
-function getMethodGet(func,arg) {
-    return urlAppGet+contract+'$method$'+func+'$'+arg
-}
-function getMethodSet(func,arg) {
+function doMethodGet(func,arg) {
     var block = docmd('method',pub,pri,contract,func,arg) 
-    return urlAppSet+block
+    xmlhttp.open("GET","/get/"+block);
+    xmlhttp.send();
+    //return urlAppGet+block
+}
+function doMethodSet(func,arg) {
+    var block = docmd('method',pub,pri,contract,func,arg) 
+    xmlhttp.open("GET","/set/"+block);
+    xmlhttp.send();
+    //return urlAppSet+block
 }
