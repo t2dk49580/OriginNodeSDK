@@ -2,53 +2,76 @@ _G['os'] = nil
 _G['io'] = nil
 json = require 'json'
 gUser = nil
-function setUser(pUser)
-gUser = pUser
-end
-
-gName = 'Origin Erc20 Template'
-gSymbol = 'OET'
-
-gOwner = nil
-gTotalSupply = 0
+gName    = "Erc20 Template Token"
+gSymbol  = 'ETT'
 gBalance = {}
+gTotal   = 70000000000
+gOwner   = nil
 
-function _toJson(pKey,pVar)
-	return json.encode({f=pKey,v=pVar,u=gUser})
+function setUser(pUser)
+	gUser = pUser
 end
 
-function init(pTotal)
-	if gOwner ~= nil then
-		return toJson('init','fail: it was init')
-	end
-	gTotalSupply = pTotal
-	gOwner = gUser
-	gBalance[gOwner] = tonumber(pTotal)
-	return _toJson('init','init finish')
+function _addResult(pUser,pMethod,pResult,pMsg,pAll)
+    local buffer = {}
+    local result = pAll
+    buffer['method'] = pMethod
+    buffer['result'] = pResult
+    buffer['msg']    = pMsg
+    buffer['owner']  = pUser
+    table.insert(result,buffer)
+    return result
+end
+
+function _getResult(pUser,pMethod,pResult,pMsg)
+    local buffer = {}
+    local result = _addResult(pUser,pMethod,pResult,pMsg,buffer)
+    return json.encode(result)
+end
+
+function init()
+    if gOwner ~= nil then
+		return 'fail'
+    end
+    gOwner = gUser
+    gBalance[gUser] = gTotal
+    return _getResult(gUser,'init',true,'ok')
+end
+
+function getSymbol()
+    return _getResult(gUser,'getSymbol',true,gSymbol)
+end
+
+function getTotalSupply()
+    return _getResult(gUser,'getTotalSupply',true,gTotal)
+end
+
+function getName()
+    return _getResult(gUser,'getName',true,gName)
 end
 
 function getBalanceOf(pUser)
-	if gBalance[pUser] == nil then
-		return _toJson('balanceOf',0)
-	end
-	return _toJson('balanceOf',gBalance[pUser])
+    if gBalance[pUser] == nil then
+		return _getResult(gUser,'getBalanceOf',true,0)
+    end
+    return _getResult(gUser,'getBalanceOf',true,gBalance[pUser])
 end
 
 function transfer(pTo,pAmount)
-	if gBalance[gUser] == nil then
-		return _toJson('transfer','sender not found')
-	end
-	if gBalance[pTo] == nil then
+    local curAmount = tonumber(pAmount)
+    if curAmount <= 0 then
+		return 'fail'
+    end
+    if gBalance[gUser] < curAmount then
+		return 'fail'
+    end
+    if gBalance[pTo] == nil then
 		gBalance[pTo] = 0
-	end
-	local curAmount = tonumber(pAmount)
-	if curAmount <= 0 then
-		return _toJson('transfer','curAmount <= 0')
-	end
-	if gBalance[gUser] < curAmount then
-		return _toJson('transfer','sender amount not enough')
-	end
-	gBalance[gUser] = gBalance[gUser] - curAmount
-	gBalance[pTo] = gBalance[pTo] + curAmount
-	return json.encode({sender=gUser,senderBalance=gBalance[gUser],reciver=pTo,reciverBlance=gBalance[pTo]})
+    end
+    local curResult = {}
+    gBalance[gUser] = gBalance[gUser] - curAmount
+    gBalance[pTo] = gBalance[pTo] + curAmount
+    _addResult(gUser,'transfer',true,gBalance[gUser],curResult)
+    _addResult(pTo,'transfer',true,gBalance[pTo],curResult)
+    return json.encode(curResult)
 end
