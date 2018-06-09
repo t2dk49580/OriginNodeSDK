@@ -2,8 +2,8 @@ _G['os'] = nil
 _G['io'] = nil
 json = require 'json'
 gUser = nil
-gName    = 'Origin Node Network'
-gSymbol  = 'ONN'
+gName    = 'Origin Node Token'
+gSymbol  = 'ONN-1'
 gBalance = {}
 gTotal   = 70000000000
 gOwner   = nil
@@ -21,6 +21,7 @@ function _addResult(pUser,pMethod,pResult,pMsg,pAll)
     buffer['result'] = pResult
     buffer['msg']    = pMsg
     buffer['owner']  = pUser
+    buffer['contract'] = gSymbol
     table.insert(result,buffer)
     return result
 end
