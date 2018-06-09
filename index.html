@@ -16,10 +16,10 @@
           </p>
           <p>
               <input type="text" id="name" value="contract name" />
-              <input type="text" id="type" value="method" />
               <input type="text" id="func"  value="function" />
               <button onClick="doGet();">Get</button>
               <button onClick="doSet();">Set</button>
+              <button onClick="doDeploy();">Deploy</button>
               <button onClick="doRequest();">Request</button>
           </p>
           <p>
@@ -33,7 +33,7 @@
               var prikey = getPri()
 
               xmlhttp.onreadystatechange=function(){
-                debug(xmlhttp.responseText);
+                debug("xmlhttp : " + xmlhttp.responseText);
               }
 
               function debug(message) {
@@ -45,16 +45,21 @@
                   var name = document.getElementById("name").value;
                   var code = document.getElementById("func").value;
                   var arg  = document.getElementById("argument").value;
-                  var type = document.getElementById("type").value;
-                  doEmccGet(type,pubkey,prikey,name,code,arg)
+                  doEmccGet("method",pubkey,prikey,name,code,arg)
               }
 
               function doSet() {
                   var name = document.getElementById("name").value;
                   var code = document.getElementById("func").value;
                   var arg  = document.getElementById("argument").value;
-                  var type = document.getElementById("type").value;
-                  doEmccSet(type,pubkey,prikey,name,code,arg)
+                  doEmccSet("method",pubkey,prikey,name,code,arg)
+              }
+
+              function doDeploy() {
+                  var name = document.getElementById("name").value;
+                  var code = document.getElementById("func").value;
+                  var arg  = document.getElementById("argument").value;
+                  doEmccDeploy(pubkey,prikey,name,code,arg)
               }
 
               function doRequest() {
@@ -121,3 +126,4 @@
           </script>
       </body>
   </html>
+

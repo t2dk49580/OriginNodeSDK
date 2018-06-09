@@ -16230,6 +16230,17 @@ function docmd(type, pubkey, prikey, name, func, arg) {
   return block
 }
 
+function toHex(str) {
+　　if(str === "")
+　　　　return "";
+　　var hexCharCode = [];
+　　 
+　　for(var i = 0; i < str.length; i++) {
+　　　　hexCharCode.push((str.charCodeAt(i)).toString(16));
+　　}
+　　return hexCharCode.join("");
+}
+
 function doEmccGet(type, pub, pri, name, func, arg) {
     var block = name + "$" + func + "$" + arg + "$" + pub;
     xmlhttp.open("GET","/get/"+block);
@@ -16237,8 +16248,10 @@ function doEmccGet(type, pub, pri, name, func, arg) {
     //return urlAppGet+block
 }
 function doEmccSet(type, pub, pri, name, func, arg) {
-    var block = docmd(type,pub,pri,name,func,arg) 
+    var block = docmd(type,pub,pri,name,func,toHex(arg)) 
+    console.log(block)
     xmlhttp.open("GET","/set/"+block);
     xmlhttp.send();
     //return urlAppSet+block
 }
+
