@@ -16242,15 +16242,15 @@ function toHex(str) {
 }
 
 function doEmccGet(type, pub, pri, name, func, arg) {
-    var block = name + "$" + func + "$" + arg + "$" + pub;
-    xmlhttp.open("GET","/get/"+block);
+    var block = name + "$" + func + "$" + toHex(arg) + "$" + pub;
+    xmlhttp.open("GET","/"+block);
     xmlhttp.send();
     //return urlAppGet+block
 }
 function doEmccSet(type, pub, pri, name, func, arg) {
     var block = docmd(type,pub,pri,name,func,toHex(arg)) 
     console.log(block)
-    xmlhttp.open("GET","/set/"+block);
+    xmlhttp.open("POST",block);
     xmlhttp.send();
     //return urlAppSet+block
 }
